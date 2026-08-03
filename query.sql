@@ -27,3 +27,14 @@ CREATE TABLE riwayat_transaksi (
   FOREIGN KEY (akun_id) REFERENCES akun(id) ON DELETE CASCADE -- kalo akun dihapus, semua riwayat transaksinya juga ikut dihapus 
   -- foreign key buat ngehubungin tabel riwayat_transaksi sama tabel akun, jadi kalo akun dihapus, semua riwayat transaksinya juga ikut dihapus
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci; -- sama kayak di atas
+
+
+-- akses atmin 
+CREATE USER 'atmin'@'127.0.0.1' IDENTIFIED BY 'J@$0N1403'; -- pwnya bebas usernamenya juga
+GRANT SELECT, INSERT, UPDATE, DELETE ON `lima`.* TO 'atmin'@'127.0.0.1';  -- ini hostnya yang 127.0.0.1 
+
+
+-- analogi dbnya Aplikasi Web (Flask) kebuka terbuka di port 5000 (192.168.1.5) biar org org 
+-- lain bisa akses, tapi harus 1 wifi 
+
+-- kalo dbnya pake localhost doang pake ip 127.0.0.1 jdnya cuma bisa diakses dari komputer gw doang 

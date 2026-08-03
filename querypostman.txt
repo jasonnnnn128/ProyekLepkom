@@ -1,0 +1,34 @@
+# kalo dia pake server ip router wifi 
+1. get nya http://192.168.1.5:5000/api/login trus jsonnya pake method post
+{
+    "nomor_rekening": "7890622171", ini sesuaiin sama usernya
+    "pin": "123456"
+}
+
+2. Kalo mau logout http://192.168.1.5:5000/api/logout methodnya post
+
+3, kalo login trus mau liat riwayat transaksi pake http://192.168.1.5:5000/api/me methodnya get
+
+4. kalo deposit pake method post http://192.168.1.5:5000/api/deposit trus query jsonnya 
+{
+    "amount": 100000,
+    "catatan": "gajipartime" contoh aja
+}
+
+5. kalo withdraw pake http://192.168.1.5:5000/api/withdraw methodnya post 
+contoh querynya 
+{
+    "amount": 10000,
+    "catatan": "belikopi" 
+}
+
+6. kalo buat transfer pake http://192.168.1.5:5000/api/transfer methodnya post 
+query jsonnya {
+    "nomor_rekening_tujuan": "2822633024",
+    "amount":"25000",
+    "catatan": "patunganbelimakan" 
+}
+
+
+
+

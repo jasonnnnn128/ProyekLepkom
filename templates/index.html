@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Masuk — Bank Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="auth-shell">
+  <div class="auth-wrap">
+    <div class="auth-side">
+      <div class="auth-logo"><span class="dot"></span> Bank Demo</div>
+      <div>
+        <h2>Kelola uang dan memantau transaksi rekening anda .</h2>
+        <p>Daftar akun baru atau masuk untuk melakukan setor, tarik tunai, transfer, dan memantau mutasi rekening.</p>
+      </div>
+      <div class="auth-card-mock">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:11px; letter-spacing:.08em; opacity:.8; text-transform:uppercase;">Saldo Anda</span>
+          <span style="width:26px;height:20px;border-radius:4px;background:#FFD400;border:2px solid #fff;"></span>
+        </div>
+        <div class="mock-num">•••• •••• 3210</div>
+        <div class="mock-row">
+          <span>NASABAH</span>
+          <span>BANK DIGITAL</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-main">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="login">Masuk</button>
+        <button class="tab-btn" data-tab="register">Daftar Akun</button>
+      </div>
+
+      <form id="formLogin" class="auth-form active">
+        <div id="loginMsg" class="form-msg"></div>
+        <div class="field">
+          <label for="loginRekening">Nomor Rekening</label>
+          <input type="text" id="loginRekening" class="field-input" placeholder="cth. 3821049573" inputmode="numeric" maxlength="20" required>
+        </div>
+        <div class="field">
+          <label for="loginPin">PIN</label>
+          <input type="password" id="loginPin" class="field-input" placeholder="PIN 4-6 digit" inputmode="numeric" maxlength="6" required>
+        </div>
+        <button type="submit" class="btn btn-mint btn-block" id="btnLogin">Masuk</button>
+      </form>
+
+      <form id="formRegister" class="auth-form">
+        <div id="registerMsg" class="form-msg"></div>
+        <div class="field">
+          <label for="regName">Nama</label>
+          <input type="text" id="regName" class="field-input" placeholder="Nama lengkap" required>
+        </div>
+        <div class="field">
+          <label for="regEmail">Email</label>
+          <input type="email" id="regEmail" class="field-input" placeholder="nama@email.com" required>
+        </div>
+        <div class="field">
+          <label for="regNoHp">Nomor HP</label>
+          <input type="text" id="regNoHp" class="field-input" placeholder="cth. 081234567890" inputmode="numeric" maxlength="15" required>
+        </div>
+        <div class="field">
+          <label for="regPin">PIN</label>
+          <input type="password" id="regPin" class="field-input" placeholder="4-6 digit angka" inputmode="numeric" maxlength="6" required>
+          <div class="form-note">Maksimal 6 digit angka.</div>
+        </div>
+        <div class="form-note">Nomor rekening akan dibuat otomatis setelah pendaftaran berhasil.</div>
+        <button type="submit" class="btn btn-mint btn-block" id="btnRegister">Daftar Akun</button>
+
+        <div class="kode-result" id="kodeResult">
+          <div class="kode-label">Nomor Rekening Anda</div>
+          <div class="kode-value" id="kodeValue">—</div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/static/app.js"></script>
+<script>
+  function batasiAngka(el, maxLen) { // Batasi input hanya angka dan panjang maksimal
+    el.addEventListener('input', () => { // pasang listener pada perubahan input
+      el.value = el.value.replace(/\D/g, '').slice(0, maxLen); // hapus non-digit lalu pangkas panjang
+    }); // akhir listener
+  } // akhir fungsi batasiAngka
+  batasiAngka(document.getElementById('loginPin'), 6); // batasi PIN login 6 digit
+  batasiAngka(document.getElementById('regPin'), 6); // batasi PIN registrasi 6 digit
+  batasiAngka(document.getElementById('regNoHp'), 15); // batasi nomor HP 15 digit
+  batasiAngka(document.getElementById('loginRekening'), 20); // batasi nomor rekening 20 digit
+
+  document.querySelectorAll('.tab-btn').forEach(btn => { // cari semua tombol tab
+    btn.addEventListener('click', () => { // ketika tab diklik
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); // hapus 'active' dari semua tab
+      document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active')); // sembunyikan semua form
+      btn.classList.add('active'); // aktifin tab yang diklik
+      document.getElementById('form' + (btn.dataset.tab === 'login' ? 'Login' : 'Register')).classList.add('active'); // tampilkan form sesuai tab
+    }); 
+  }); 
+  document.getElementById('formLogin').addEventListener('submit', async (e) => { // submit login
+    e.preventDefault(); // cegah reload halaman
+    const btn = document.getElementById('btnLogin'); // tombol submit login
+    const msg = document.getElementById('loginMsg'); // area pesan login
+    msg.className = 'form-msg'; // reset kelas pesan
+    btn.disabled = true; btn.textContent = 'Memproses...'; // nonaktifkan tombol sementara
+
+    const payload = { // susun data untuk dikirim ke server
+      nomor_rekening: document.getElementById('loginRekening').value.trim(), // ambil nomor rekening
+      pin: document.getElementById('loginPin').value.trim(), // ambil PIN
+    }; // akhir payload
+
+    try {
+      const res = await fetch('/api/login', { // kirim request login
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+      }); // akhir fetch
+      const data = await res.json(); // parse JSON dari respons
+      if (data.ok) { 
+        window.location.href = '/dashboard'; // alihkan ke dashboard
+      } else {
+        msg.textContent = data.error; // tampilkan pesan error dari server
+        msg.classList.add('error'); 
+      }
+    } catch (err) {
+      msg.textContent = 'Gagal terhubung ke server.'; // pesan koneksi gagal
+      msg.classList.add('error'); 
+    } finally {
+      btn.disabled = false; btn.textContent = 'Masuk'; // pulihkan tombol
+    }
+  }); // akhir handler login
+
+  document.getElementById('formRegister').addEventListener('submit', async (e) => { // submit registrasi
+    e.preventDefault(); // cegah reload halaman
+    const btn = document.getElementById('btnRegister'); // tombol submit register
+    const msg = document.getElementById('registerMsg'); // area pesan register
+    const kodeBox = document.getElementById('kodeResult'); // container nomor rekening hasil
+    msg.className = 'form-msg'; // reset kelas pesan
+    kodeBox.style.display = 'none'; // sembunyikan hasil awal
+    btn.disabled = true; btn.textContent = 'Memproses...'; // nonaktifkan tombol sementara
+
+    const payload = { 
+      name: document.getElementById('regName').value.trim(), 
+      email: document.getElementById('regEmail').value.trim(), 
+      no_hp: document.getElementById('regNoHp').value.trim(), 
+      pin: document.getElementById('regPin').value.trim(), 
+    }; // akhir payload
+
+    try {
+      const res = await fetch('/api/register', { // kirim request registrasi
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+      }); // akhir fetch
+      const data = await res.json(); 
+      if (data.ok) { // jika sukses
+        msg.textContent = data.message + ' Silakan masuk menggunakan nomor rekening & PIN Anda.'; // buat ngasi tau user
+        msg.classList.add('success'); // beri gaya sukses
+        document.getElementById('kodeValue').textContent = data.nomor_rekening; // nampilin nomor rekening
+        kodeBox.style.display = 'block'; // tunjukkan kotak hasil
+        document.getElementById('formRegister').reset(); // reset form
+      } else {
+        msg.textContent = data.error; // tampilkan error
+        msg.classList.add('error'); 
+      }
+    } catch (err) {
+      msg.textContent = 'Gagal terhubung ke server.'; // pesan koneksi gagal ke server
+      msg.classList.add('error'); 
+    } finally {
+      btn.disabled = false; btn.textContent = 'Daftar Akun'; // buat tombol kembali aktif
+    }
+  }); // akhir handler register
+</script>
+</body>
+</html>

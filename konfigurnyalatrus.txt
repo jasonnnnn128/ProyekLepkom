@@ -1,0 +1,16 @@
+1. Install Pm2 dulu buat buat aplikasi atau webnya berjalan di latar belakang 
+
+2. cd dulu ke direktorinya 
+
+3. trus pake query pm2 start app.py --name "my-api" --interpreter python
+
+app.py: File utama yang mau di run
+--name "my-api": Nama nya bebas
+--interpreter python: ngasitau PM2 buat ngerun file tersebut pake python bawaan Windows.
+
+
+4. kalo mau matiin tinggal pm2 stop my-api biar ga diakses lagi samasiapapun
+
+5. kalo mau hapus programnya dari daftar pengawasan PM2 pake pm2 delete my-api
+
+ 

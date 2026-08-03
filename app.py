@@ -20,10 +20,10 @@ app.secret_key = os.environ.get('SECRET_KEY',) #ambil secret key
 
 # konfigur dulu koneksi database MySQL
 DB_CONFIG = {
-    'host': os.environ.get('DB_HOST', 'localhost'),
-    'user': os.environ.get('DB_USER', 'root'),
+    'host': os.environ.get('DB_HOST', '127.0.0.1'), 
+    'user': os.environ.get('DB_USER', 'atmin'),
     'password': os.environ.get('DB_PASSWORD', ''),
-    'database': os.environ.get('DB_NAME', 'lima'),
+    'database': os.environ.get('DB_NAME', ''),
 }
 
 

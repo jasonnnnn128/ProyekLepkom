@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Bank Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="dash-shell">
+  <div class="dash-topbar">
+    <div class="dash-brand"><span class="dot"></span> BankDigital</div>
+    <div class="user-menu">
+      <div class="who">
+        <strong id="whoName">—</strong>
+        <span id="whoRekening">—</span>
+      </div>
+      <div class="avatar-circle" id="whoAvatar">?</div>
+      <button class="btn btn-danger" id="btnLogout" style="padding:9px 14px; font-size:12.5px;">Keluar</button>
+    </div>
+  </div>
+
+  <div class="dash-grid">
+    <div>
+      <div class="bank-card">
+        <div class="bc-top">
+          <div>
+            <div class="bc-label">Saldo Anda</div>
+            <div class="bc-balance" id="bcBalance">Rp 0</div>
+          </div>
+          <div class="bc-chip"></div>
+        </div>
+        <div class="bc-bottom">
+          <div>
+            <div class="bc-number" id="bcNumber">•••• •••• ••••</div>
+            <div class="bc-name" id="bcName">NASABAH</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button class="action-btn deposit" id="btnOpenDeposit">
+          <span class="ic-wrap"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7-7 7 7"/></svg></span>
+          Setor
+        </button>
+        <button class="action-btn withdraw" id="btnOpenWithdraw">
+          <span class="ic-wrap"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7 7 7-7"/></svg></span>
+          Tarik Tunai
+        </button>
+        <button class="action-btn transfer" id="btnOpenTransfer">
+          <span class="ic-wrap"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></span>
+          Transfer
+        </button>
+      </div>
+
+      <div class="card" style="margin-top:18px;">
+        <h3>Ringkasan</h3>
+        <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px;">
+          <div style="display:flex; justify-content:space-between; color:var(--ink-soft);">
+            <span>Nomor Rekening</span><span id="sumRekening" style="color:var(--ink); font-weight:600;">—</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; color:var(--ink-soft);">
+            <span>Total Transaksi Tercatat</span><span id="sumTotalTx" style="color:var(--ink); font-weight:600;">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Riwayat Transaksi</h3>
+      <div class="history-list" id="historyList">
+        <div class="history-empty">Memuat riwayat...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalDeposit">
+  <div class="modal-box">
+    <h3>Setor Dana</h3>
+    <div class="modal-sub">Masukkan jumlah yang ingin Anda deposit.</div>
+    <div id="depositMsg" class="form-msg" style="margin-bottom:12px;"></div>
+    <div class="field" style="margin-bottom:14px;">
+      <label for="depositAmount">Jumlah (Rp)</label>
+      <input type="number" id="depositAmount" class="field-input" min="1" placeholder="cth. 100000">
+    </div>
+    <div class="field">
+      <label for="depositCatatan">Keterangan (untuk apa setoran ini)</label>
+      <input type="text" id="depositCatatan" class="field-input" placeholder="cth. Gaji bulan Juli, uang jajan, dll" maxlength="255">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-block" data-close="modalDeposit">Batal</button>
+      <button class="btn btn-mint btn-block" id="btnSubmitDeposit">Setor</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalWithdraw">
+  <div class="modal-box">
+    <h3>Tarik Tunai</h3>
+    <div class="modal-sub">Masukkan jumlah yang ingin Anda tarik.</div>
+    <div id="withdrawMsg" class="form-msg" style="margin-bottom:12px;"></div>
+    <div class="field" style="margin-bottom:14px;">
+      <label for="withdrawAmount">Jumlah (Rp)</label>
+      <input type="number" id="withdrawAmount" class="field-input" min="1" placeholder="cth. 50000">
+    </div>
+    <div class="field">
+      <label for="withdrawCatatan">Keterangan (untuk apa penarikan ini)</label>
+      <input type="text" id="withdrawCatatan" class="field-input" placeholder="cth. Belanja bulanan, bayar listrik, dll" maxlength="255">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-block" data-close="modalWithdraw">Batal</button>
+      <button class="btn btn-mint btn-block" id="btnSubmitWithdraw">Tarik</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalTransfer">
+  <div class="modal-box">
+    <h3>Transfer Antar Rekening</h3>
+    <div class="modal-sub">Masukkan nomor rekening tujuan dan jumlah transfer.</div>
+    <div id="transferMsg" class="form-msg" style="margin-bottom:12px;"></div>
+    <div class="field" style="margin-bottom:14px;">
+      <label for="transferRekening">Nomor Rekening Tujuan</label>
+      <input type="text" id="transferRekening" class="field-input" placeholder="cth. 3821049573" inputmode="numeric" maxlength="20">
+      <div class="form-note" id="transferNamaTujuan" style="margin-top:6px;"></div>
+    </div>
+    <div class="field" style="margin-bottom:14px;">
+      <label for="transferAmount">Jumlah (Rp)</label>
+      <input type="number" id="transferAmount" class="field-input" min="1" placeholder="cth. 100000">
+    </div>
+    <div class="field">
+      <label for="transferCatatan">Keterangan (untuk apa transfer ini)</label>
+      <input type="text" id="transferCatatan" class="field-input" placeholder="cth. Bayar patungan, kirim uang bulanan, dll" maxlength="255">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-block" data-close="modalTransfer">Batal</button>
+      <button class="btn btn-mint btn-block" id="btnSubmitTransfer">Transfer</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/static/app.js"></script>
+<script>
+  let currentAccount = null; // akun saat ini yang ditampilkan
+  let cekRekeningTimer = null; // timer debounce untuk cek nomor rekening tujuan
+
+  function formatRp(v) { // format angka jadi 'Rp 1.234.000'
+    const n = Math.round(Number(v) || 0); // pastikan angka bulat
+    return 'Rp ' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // sisipkan titik tiap 3 digit
+  }
+
+  function openModal(id) { document.getElementById(id).classList.add('show'); } // buka modal
+  function closeModal(id) { document.getElementById(id).classList.remove('show'); } // tutup modal
+
+  document.querySelectorAll('[data-close]').forEach(btn => { // tombol yang menutup modal
+    btn.addEventListener('click', () => closeModal(btn.dataset.close));
+  });
+  document.querySelectorAll('.modal-backdrop').forEach(backdrop => { // klik di area gelap tutup modal
+    backdrop.addEventListener('click', (e) => { if (e.target === backdrop) backdrop.classList.remove('show'); });
+  });
+
+  document.getElementById('btnOpenDeposit').addEventListener('click', () => openModal('modalDeposit')); // buka modal setor
+  document.getElementById('btnOpenWithdraw').addEventListener('click', () => openModal('modalWithdraw')); // buka modal tarik
+  document.getElementById('btnOpenTransfer').addEventListener('click', () => openModal('modalTransfer')); // buka modal transfer
+
+  function renderAccount(account) { // tampilkan data akun di UI
+    currentAccount = account; // simpan ke variabel global
+    document.getElementById('whoName').textContent = account.name; // nama pengguna
+    document.getElementById('whoRekening').textContent = account.nomor_rekening; // nomor rekening
+    document.getElementById('whoAvatar').textContent = account.name.slice(0, 1).toUpperCase(); // inisial avatar
+    document.getElementById('bcBalance').textContent = formatRp(account.balance); // saldo terformat
+    document.getElementById('bcNumber').textContent = account.nomor_rekening; // nomor di kartu
+    document.getElementById('bcName').textContent = account.name.toUpperCase(); // nama di kartu
+    document.getElementById('sumRekening').textContent = account.nomor_rekening; // ringkasan nomor
+  }
+
+  function labelJenis(jenis) { // beri label, ikon, dan tanda plus/minus untuk jenis transaksi
+    switch (jenis) {
+      case 'deposit': return { title: 'Setor Dana', icon: '↓', sign: '+' };
+      case 'withdraw': return { title: 'Tarik Tunai', icon: '↑', sign: '-' };
+      case 'transfer_keluar': return { title: 'Transfer Keluar', icon: '↗', sign: '-' };
+      case 'transfer_masuk': return { title: 'Transfer Masuk', icon: '↙', sign: '+' };
+      default: return { title: jenis, icon: '•', sign: '' };
+    }
+  }
+
+  function cssClassJenis(jenis) { // tentukan kelas CSS berdasarkan jenis (untuk warna)
+    return (jenis === 'deposit' || jenis === 'transfer_masuk') ? 'deposit' : 'withdraw';
+  }
+
+  function renderHistory(riwayat) { // render daftar riwayat transaksi
+    const wrap = document.getElementById('historyList'); // container list
+    document.getElementById('sumTotalTx').textContent = riwayat.length; // jumlah transaksi
+    if (riwayat.length === 0) { // bila kosong
+      wrap.innerHTML = '<div class="history-empty">Belum ada transaksi.<br>Mulai dengan setor dana pertama Anda.</div>'; // pesan kosong
+      return;
+    }
+    wrap.innerHTML = ''; // bersihkan isi
+    riwayat.forEach(r => { // buat baris untuk tiap transaksi
+      const row = document.createElement('div');
+      row.className = 'history-row';
+      const info = labelJenis(r.jenis); // ambil label/icon
+      const cls = cssClassJenis(r.jenis); // ambil kelas warna
+
+      let keterangan = r.catatan ? r.catatan : ''; // mulai dengan catatan bila ada
+      if (r.jenis === 'transfer_keluar' && r.rekening_terkait) { // transfer keluar
+        keterangan = `Ke rekening ${r.rekening_terkait}` + (r.catatan ? ` — ${r.catatan}` : '');
+      } else if (r.jenis === 'transfer_masuk' && r.rekening_terkait) { // transfer masuk
+        keterangan = `Dari rekening ${r.rekening_terkait}` + (r.catatan ? ` — ${r.catatan}` : '');
+      } else if (!keterangan) { // jika tidak ada keterangan
+        keterangan = 'Tanpa keterangan';
+      }
+
+      row.innerHTML = `
+        <div class="hist-ic ${cls}">${info.icon}</div>
+        <div class="hist-mid">
+          <strong>${info.title}</strong>
+          <span>${r.waktu} &middot; Saldo: ${formatRp(r.saldo_setelah)}</span>
+          <span class="hist-note">${keterangan}</span>
+        </div>
+        <div class="hist-amt ${cls}">${info.sign}${formatRp(r.jumlah)}</div>
+      `; // isi HTML baris
+      wrap.appendChild(row); // tambahkan ke daftar
+    });
+  }
+
+  async function loadMe() { // ambil data akun + riwayat dari server
+    try {
+      const res = await fetch('/api/me'); // panggil endpoint
+      const data = await res.json(); // parse JSON
+      if (!data.ok) { // bila tidak terautentikasi
+        window.location.href = '/'; // arahkan ke halaman login
+        return;
+      }
+      renderAccount(data.account); // tampilkan akun
+      renderHistory(data.riwayat); // tampilkan riwayat
+    } catch (err) {
+      showToast('Gagal memuat data akun.', 'error'); // tampilkan toast error
+    }
+  }
+
+  document.getElementById('btnSubmitDeposit').addEventListener('click', async () => { // proses setor dana
+    const btn = document.getElementById('btnSubmitDeposit'); // tombol submit
+    const msg = document.getElementById('depositMsg'); // area pesan
+    const amount = document.getElementById('depositAmount').value; // jumlah
+    const catatan = document.getElementById('depositCatatan').value; // catatan
+    msg.className = 'form-msg'; // reset kelas pesan
+    btn.disabled = true; btn.textContent = 'Memproses...'; // nonaktifkan tombol
+    try {
+      const res = await fetch('/api/deposit', { // kirim data ke server
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ amount, catatan })
+      });
+      const data = await res.json(); // parse respon
+      if (data.ok) {
+        closeModal('modalDeposit'); // tutup modal bila sukses
+        document.getElementById('depositAmount').value = ''; // bersihkan input
+        document.getElementById('depositCatatan').value = '';
+        showToast(data.message, 'success'); // tampilkan toast sukses
+        loadMe(); // refresh data
+      } else {
+        msg.textContent = data.error; // tampilkan error dari server
+        msg.classList.add('error');
+      }
+    } catch (err) {
+      msg.textContent = 'Gagal terhubung ke server.'; // pesan koneksi gagal
+      msg.classList.add('error');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Setor'; // pulihkan tombol
+    }
+  });
+
+  document.getElementById('btnSubmitWithdraw').addEventListener('click', async () => { // proses tarik tunai
+    const btn = document.getElementById('btnSubmitWithdraw');
+    const msg = document.getElementById('withdrawMsg');
+    const amount = document.getElementById('withdrawAmount').value;
+    const catatan = document.getElementById('withdrawCatatan').value;
+    msg.className = 'form-msg';
+    btn.disabled = true; btn.textContent = 'Memproses...';
+    try {
+      const res = await fetch('/api/withdraw', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ amount, catatan })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        closeModal('modalWithdraw');
+        document.getElementById('withdrawAmount').value = '';
+        document.getElementById('withdrawCatatan').value = '';
+        showToast(data.message, 'success');
+        loadMe();
+      } else {
+        msg.textContent = data.error;
+        msg.classList.add('error');
+      }
+    } catch (err) {
+      msg.textContent = 'Gagal terhubung ke server.';
+      msg.classList.add('error');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Tarik';
+    }
+  });
+
+  document.getElementById('transferRekening').addEventListener('input', (e) => { // cek nama pemilik rekening tujuan
+    const nomor = e.target.value.trim(); // ambil nomor yang dimasukkan
+    const infoBox = document.getElementById('transferNamaTujuan'); // area info nama tujuan
+    infoBox.textContent = ''; // reset teks
+    infoBox.style.color = 'var(--ink-faint)'; // warna default
+    clearTimeout(cekRekeningTimer); // batalkan timer sebelumnya
+    if (!nomor) return; // jika kosong, keluar
+    cekRekeningTimer = setTimeout(async () => { // debounce 400ms
+      try {
+        const res = await fetch('/api/cari-rekening?nomor=' + encodeURIComponent(nomor)); // panggil API
+        const data = await res.json();
+        if (data.ok) {
+          infoBox.textContent = 'Atas nama: ' + data.name; // tampilkan nama
+          infoBox.style.color = 'var(--mint)';
+        } else {
+          infoBox.textContent = data.error; // tampilkan pesan error
+          infoBox.style.color = 'var(--danger)';
+        }
+      } catch (err) {
+        infoBox.textContent = ''; // jika gagal, kosongkan
+      }
+    }, 400);
+  });
+
+  document.getElementById('btnSubmitTransfer').addEventListener('click', async () => { // proses transfer
+    const btn = document.getElementById('btnSubmitTransfer');
+    const msg = document.getElementById('transferMsg');
+    const nomor_rekening_tujuan = document.getElementById('transferRekening').value.trim();
+    const amount = document.getElementById('transferAmount').value;
+    const catatan = document.getElementById('transferCatatan').value;
+    msg.className = 'form-msg';
+    btn.disabled = true; btn.textContent = 'Memproses...';
+    try {
+      const res = await fetch('/api/transfer', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nomor_rekening_tujuan, amount, catatan })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        closeModal('modalTransfer');
+        document.getElementById('transferRekening').value = '';
+        document.getElementById('transferAmount').value = '';
+        document.getElementById('transferCatatan').value = '';
+        document.getElementById('transferNamaTujuan').textContent = '';
+        showToast(data.message, 'success');
+        loadMe();
+      } else {
+        msg.textContent = data.error;
+        msg.classList.add('error');
+      }
+    } catch (err) {
+      msg.textContent = 'Gagal terhubung ke server.';
+      msg.classList.add('error');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Transfer';
+    }
+  });
+
+  document.getElementById('btnLogout').addEventListener('click', async () => { // logout
+    await fetch('/api/logout', { method: 'POST' });
+    window.location.href = '/'; // arahkan ke login
+  });
+
+  loadMe(); // inisialisasi data saat halaman dibuka
+</script>
+</body>
+</html>
