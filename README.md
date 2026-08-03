@@ -47,15 +47,14 @@ atau alamat ip kalian jika menggunakan port (0.0.0.0)
 
 ## Alur Penggunaan
 
-1. **Daftar Akun** — isi nama, PIN (minimal 4 digit angka), dan saldo awal.
-   Kode antrian akan tampil setelah berhasil.
-2. **Masuk** — login pakai nama & PIN yang sama.
-3. Di **Dashboard**, kartu digital menampilkan saldo & kode antrian Anda.
+1. **Daftar Akun** — isi nama, PIN, dan saldo awal.
+   Nomor rekening akan tampil setelah berhasil mendaftar
+2. **Masuk** — login pakai nomor rekening & PIN yang sama.
+3. Di **Dashboard**, kartu digital menampilkan saldo riwayat transaksi untuk setor tarik dan transfer
    Gunakan tombol **Setor / Deposit** atau **Tarik Tunai** untuk transaksi;
-   saldo & riwayat transaksi ter-update otomatis tanpa reload halaman.
 4. Tombol **Keluar** untuk logout.
 
-## Endpoint API (dipanggil oleh app.js via `fetch`)
+## Endpoint API 
 
 | Method | Endpoint | Fungsi |
 |---|---|---|
