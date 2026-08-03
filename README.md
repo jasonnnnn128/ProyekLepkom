@@ -42,7 +42,8 @@ export DB_NAME= nama db anda
 ```bash
 python app.py
 ```
-Buka `http://127.0.0.1:5000/` di browser.
+Buka `http://127.0.0.1:5000/` di browser untuk server lokal
+atau alamat ip kalian jika menggunakan port (0.0.0.0)
 
 ## Alur Penggunaan
 
@@ -65,9 +66,3 @@ Buka `http://127.0.0.1:5000/` di browser.
 | POST | `/api/deposit` | Setor dana |
 | POST | `/api/withdraw` | Tarik dana |
 
-## Catatan Produksi
-- Set `debug=False` di `app.py` sebelum deploy.
-- Jalankan lewat WSGI server seperti `gunicorn` (`gunicorn -w 4 app:app`), bukan `python app.py`.
-- Gunakan HTTPS dan `SECRET_KEY` acak yang kuat.
-- Pertimbangkan menaikkan panjang minimum PIN dan menambahkan rate-limit
-  percobaan login untuk keamanan tambahan.
