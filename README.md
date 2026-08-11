@@ -22,26 +22,23 @@ bank_app/
 - Python 3.10+
 - MySQL Server aktif
 
-### 3. Buat database & tabel
+### 2. Buat database & tabel
 - ada di query.sql
 
-### 4. Atur kredensial database
-```bash
+### 3. Atur kredensial database
 export SECRET_KEY="kunci-rahasia-acak-anda"
 export DB_HOST=host anda
 export DB_USER=user anda
 export DB_PASSWORD="password_mysql_anda"
 export DB_NAME= nama db anda
-```
 
 > Jika memakai user MySQL khusus, buat dulu:
 > `CREATE USER 'bankuser'@'localhost' IDENTIFIED BY 'passwordanda';`
 > `GRANT ALL PRIVILEGES ON lima.* TO 'bankuser'@'localhost';`
 
-### 5. Jalankan server
-```bash
-python app.py
-```
+### 4. Jalankan server
+python app.py di terminal or run code
+
 Buka `http://127.0.0.1:5000/` di browser untuk server lokal
 atau alamat ip kalian jika menggunakan port (0.0.0.0)
 
