@@ -30,8 +30,8 @@ CREATE TABLE riwayat_transaksi (
 
 
 -- akses atmin 
-CREATE USER 'atmin'@'127.0.0.1' IDENTIFIED BY 'J@$0N1403'; -- pwnya bebas usernamenya juga
-GRANT SELECT, INSERT, UPDATE, DELETE ON `lima`.* TO 'atmin'@'127.0.0.1';  -- ini hostnya yang 127.0.0.1 
+CREATE USER 'atmin'@'%' IDENTIFIED BY 'J@$0N1403'; -- pwnya bebas usernamenya juga % itu buat semua host bisa akses, kalo mau spesifik hostnya bisa ganti % 
+GRANT SELECT, INSERT, UPDATE, DELETE ON `lima`.* TO 'atmin'@'%';  -- ini hostnya yang % soalnya user atmin bisa akses dari semua host, kalo mau spesifik hostnya bisa ganti %
 
 
 -- analogi dbnya Aplikasi Web (Flask) kebuka terbuka di port 5000 (192.168.1.5) biar org org 
