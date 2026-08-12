@@ -40,8 +40,9 @@
       <form id="formLogin" class="auth-form active">
         <div id="loginMsg" class="form-msg"></div>
         <div class="field">
-          <label for="loginRekening">Nomor Rekening</label>
-          <input type="text" id="loginRekening" class="field-input" placeholder="cth. 3821049573" inputmode="numeric" maxlength="20" required>
+          <label for="loginIdentifier">Email, Nomor HP, atau Nomor Rekening</label>
+          <input type="text" id="loginIdentifier" class="field-input" placeholder="cth. email@example.com, 081234567890, atau 3821049573" maxlength="50" required>
+          <div class="form-note">Jika lupa nomor rekening, gunakan email atau nomor HP yang terdaftar.</div>
         </div>
         <div class="field">
           <label for="loginPin">PIN</label>
@@ -80,7 +81,6 @@
     </div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script src="/static/app.js"></script>
@@ -93,7 +93,6 @@
   batasiAngka(document.getElementById('loginPin'), 6); // batasi PIN login 6 digit
   batasiAngka(document.getElementById('regPin'), 6); // batasi PIN registrasi 6 digit
   batasiAngka(document.getElementById('regNoHp'), 15); // batasi nomor HP 15 digit
-  batasiAngka(document.getElementById('loginRekening'), 20); // batasi nomor rekening 20 digit
 
   document.querySelectorAll('.tab-btn').forEach(btn => { // cari semua tombol tab
     btn.addEventListener('click', () => { // ketika tab diklik
@@ -111,7 +110,7 @@
     btn.disabled = true; btn.textContent = 'Memproses...'; // nonaktifkan tombol sementara
 
     const payload = { // susun data untuk dikirim ke server
-      nomor_rekening: document.getElementById('loginRekening').value.trim(), // ambil nomor rekening
+      identifier: document.getElementById('loginIdentifier').value.trim(), // ambil email, nomor HP, atau nomor rekening
       pin: document.getElementById('loginPin').value.trim(), // ambil PIN
     }; // akhir payload
 
