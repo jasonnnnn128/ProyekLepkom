@@ -32,9 +32,9 @@ export DB_USER=user anda
 export DB_PASSWORD="password_mysql_anda"
 export DB_NAME= nama db anda
 
-> Jika memakai user MySQL khusus, buat dulu:
-> `CREATE USER 'bankuser'@'localhost' IDENTIFIED BY 'passwordanda';`
-> `GRANT ALL PRIVILEGES ON lima.* TO 'bankuser'@'localhost';`
+> Kalo mau pake user khusus, buat dulu:
+> `CREATE USER 'username'@'localhost' IDENTIFIED BY 'passwordnya';`
+> `GRANT ALL PRIVILEGES ON databasenya.* TO 'username'@'localhost';`
 
 ### 4. Jalankan server
 python app.py di terminal or run code
