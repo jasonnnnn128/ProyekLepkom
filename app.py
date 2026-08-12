@@ -243,20 +243,6 @@ def load_account_by_id(id_akun):
         cursor.close()
         db.close()
 
-
-# Cari yang punya rekening dari nomor rekening
-def find_account_name_by_nomor(nomor_rekening):
-    db = get_db()
-    cursor = db.cursor(dictionary=True)
-    try:
-        cursor.execute("SELECT name FROM akun WHERE nomor_rekening=%s", (nomor_rekening,))
-        result = cursor.fetchone()
-        return result['name'] if result else None
-    finally:
-        cursor.close()
-        db.close()
-
-
 #Ambil riwayat transaksi akun
 def get_riwayat(id_akun, limit=20):
     db = get_db()
