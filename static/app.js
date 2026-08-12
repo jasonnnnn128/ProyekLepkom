@@ -12,3 +12,34 @@ function showToast(message, type = '') { // tampilkan pesan singkat (toast)
     toast.className = 'toast'; // kembalikan kelas default (sembunyikan)
   }, 3200); // tunggu 3.2 detik sebelum sembunyikan
 }
+
+async function handleLogin(event) {
+  event.preventDefault();
+  
+  const identifier = document.getElementById('loginIdentifier').value.trim();
+  const pin = document.getElementById('loginPin').value.trim();
+
+  try {
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        identifier: identifier,
+        pin: pin
+      }),
+    });
+
+    const result = await response.json();
+
+    if (result.ok) {
+      window.location.href = '/dashboard';
+    } else {
+      alert(result.error || 'Login gagal.');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Terjadi kesalahan jaringan.');
+  }
+}
