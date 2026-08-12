@@ -4,16 +4,16 @@
 
 ```
 bank_app/
-├── app.py                 # Backend Flask (adaptasi logika dari skrip asli)
+├── app.py                 
 ├── requirements.txt
-├── schema.sql              # CREATE TABLE akun & riwayat_transaksi
+├── schema.sql              
 ├── .env.example
 ├── templates/
-│   ├── index.html          # Halaman login & daftar akun
-│   └── dashboard.html      # Halaman saldo, setor/tarik, riwayat
+│   ├── index.html          
+│   └── dashboard.html      
 └── static/
-    ├── css/style.css       # Desain UI (tema kartu digital navy + mint)
-    └── js/app.js           # Utilitas JS bersama (notifikasi toast)
+    ├── css/style.css      
+    └── js/app.js           
 ```
 
 ## Instalasi dan cara ngerunnya
