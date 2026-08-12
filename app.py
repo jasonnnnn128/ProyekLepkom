@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash # untu
 
 try:
     from dotenv import load_dotenv
-    _env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env') # 
+    _env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env') #ambil path file .env di folder yang sama dengan app.py
     load_dotenv(dotenv_path=_env_path)
 except ImportError:
     pass
@@ -20,10 +20,10 @@ app.secret_key = os.environ.get('SECRET_KEY',) #ambil secret key
 
 # konfigur dulu koneksi database MySQL
 DB_CONFIG = {
-    'host': os.environ.get('DB_HOST', ''), 
-    'user': os.environ.get('DB_USER', ''),
+    'host': os.environ.get('DB_HOST', ''),
+    'user': os.environ.get('DB_USER', ''), 
     'password': os.environ.get('DB_PASSWORD', ''),
-    'database': os.environ.get('DB_NAME', ''),
+    'database': os.environ.get('DB_NAME', ''), 
 }
 
 
@@ -207,16 +207,23 @@ def create_account(name, email, no_hp, pin, balance):
         db.close()
 
 
-#login pake nomor rekening sama PIN
-def login_account(nomor_rekening, pin):
+#login pake nomor rekening, email, atau nomor HP bersama PIN
+def login_account(identifier, pin):
+    identifier = (identifier or '').strip()
+    if '@' in identifier:
+        identifier = identifier.lower()
+
     db = get_db()
     cursor = db.cursor(dictionary=True)
     try:
-        cursor.execute("SELECT * FROM akun WHERE nomor_rekening=%s", (nomor_rekening,))
+        cursor.execute(
+            "SELECT * FROM akun WHERE nomor_rekening=%s OR email=%s OR no_hp=%s",
+            (identifier, identifier, identifier)
+        )
         result = cursor.fetchone()
 
         if not result or not check_password_hash(result['pin'], pin):
-            return None #buat return None kalo nomor rekening atau pin salah
+            return None #buat return None kalo identitas atau pin salah
 
         return BankAccount(
             result['id'],
@@ -242,6 +249,7 @@ def load_account_by_id(id_akun):
     finally:
         cursor.close()
         db.close()
+        
 
 #Ambil riwayat transaksi akun
 def get_riwayat(id_akun, limit=20):
@@ -278,7 +286,7 @@ def parse_amount(raw):
 @app.route('/')
 def halaman_login():
     if 'id_akun' in session:
-        return redirect('/dashboard')
+        return redirect('/dashboard') #buat redirect ke halaman dashboard kalo udah login
     return render_template('index.html')
 
 
@@ -286,7 +294,7 @@ def halaman_login():
 @app.route('/dashboard')
 def halaman_dashboard():
     if 'id_akun' not in session:
-        return redirect('/')
+        return redirect('/') #buat redirect ke halaman login kalo belum login
     return render_template('dashboard.html')
 
 # API buat akun baru
@@ -294,8 +302,8 @@ def halaman_dashboard():
 def api_register():
     data = request.get_json(silent=True) or {}
     name = (data.get('name') or '').strip() #strip() buat hapus spasi di awal dan akhir string, lower() buat bikin huruf kecil semua
-    email = (data.get('email') or '').strip().lower()
-    no_hp = (data.get('no_hp') or '').strip()
+    email = (data.get('email') or '').strip().lower() #lower() buat bikin huruf kecil semua
+    no_hp = (data.get('no_hp') or '').strip() 
     pin = (data.get('pin') or '').strip()
 
     if not name or not email or not no_hp or not pin:
@@ -321,12 +329,12 @@ def api_register():
 @app.route('/api/login', methods=['POST'])
 def api_login():
     data = request.get_json(silent=True) or {}
-    nomor_rekening = (data.get('nomor_rekening') or '').strip()
+    identifier = (data.get('identifier') or '').strip()
     pin = (data.get('pin') or '').strip()
 
-    account = login_account(nomor_rekening, pin)
+    account = login_account(identifier, pin)
     if not account:
-        return jsonify({'ok': False, 'error': 'Nomor rekening atau PIN salah.'}), 401
+        return jsonify({'ok': False, 'error': 'Identitas atau PIN salah.'}), 401
 
     session['id_akun'] = account.id_akun
     return jsonify({'ok': True, 'account': account.to_dict()})
@@ -340,7 +348,7 @@ def api_logout():
 
 
 #API buat ambil data akun yang lagi login sama riwayat transaksinya
-@app.route('/api/me', methods=['GET']) #kenapa pake /me? karena ini buat ambil data akun yang lagi login, jadi /me itu singkatan dari gue
+@app.route('/api/me', methods=['GET']) #kenapa pake /me? karena ini buat ambil data akun yang lagi login, jadi /me itu singkatan dari user
 def api_me():
     if 'id_akun' not in session:
         return jsonify({'ok': False, 'error': 'Belum login.'}), 401
@@ -384,7 +392,7 @@ def api_withdraw():
         return jsonify({'ok': False, 'error': 'Belum login.'}), 401
 
     data = request.get_json(silent=True) or {}
-    amount = parse_amount(data.get('amount'))
+    amount = parse_amount(data.get('amount')) #parse_amount buat ubah jumlah input jadi Decimal, kalo ga valid return None
     catatan = (data.get('catatan') or '').strip()[:255]
     if amount is None:
         return jsonify({'ok': False, 'error': 'Jumlah penarikan tidak valid.'}), 400
