@@ -16,11 +16,11 @@ bank_app/
     └── js/app.js           # Utilitas JS bersama (notifikasi toast)
 ```
 
-## Instalasi & Menjalankan
+## Instalasi dan cara ngerunnya
 
-### 1. Prasyarat
-- Python 3.10+
-- MySQL Server aktif
+### 1. Yang di perluin
+- Python 
+- MySQL Server 
 
 ### 2. Buat database & tabel
 - ada di query.sql
